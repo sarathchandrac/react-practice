@@ -4,3 +4,11 @@
 * State of the component is created in the component and passed down to the child components.
 * All state is not created equal
 
+```
+npm install npm@latest -g
+npm i -g create-react-app 
+create-react-app redux-test-one
+npm i redux react-redux redux-thunk
+# Issue - React scripts not recognised
+npm install
+```
