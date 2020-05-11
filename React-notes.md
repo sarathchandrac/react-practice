@@ -11,4 +11,11 @@ create-react-app redux-test-one
 npm i redux react-redux redux-thunk
 # Issue - React scripts not recognised
 npm install
+npm i -D prettier
+#eslint for runtime checking for errors and dynamic suggestions
+npm i -D eslint eslint-config-prettier
+# "format": "prettier \"src/**/*.{js,ts,tsx,html}\" --write",
+# eslint by open js foudation
+npm i -D typescript @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
 ```
