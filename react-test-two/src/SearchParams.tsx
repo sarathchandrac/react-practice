@@ -1,62 +1,86 @@
-import React, { useState } from 'react';
-import { ANIMALS, Breeds } from '@frontendmasters/pet';
+import React, {
+    useState,
+    useEffect,
+    useContext,
+    FunctionComponent
+} from 'react';
+import { RouteComponentProps } from '@reach/router';
+import pet, { ANIMALS, Animal } from '@frontendmasters/pet';
+import useDropdown from './useDropdown';
+import Results from './Results';
+import ThemeContext from './ThemeContext';
 
+const SearchParams: FunctionComponent<RouteComponentProps> = () => {
+    const [theme, setTheme] = useContext(ThemeContext);
+    const [location, updateLocation] = useState('Seattle, WA');
+    const [breeds, updateBreeds] = useState([] as string[]);
+    const [pets, setPets] = useState([] as Animal[]);
+    const [animal, AnimalDropdown] = useDropdown('Animal', 'dog', ANIMALS);
+    const [breed, BreedDropdown, updateBreed] = useDropdown(
+        'Breed',
+        '',
+        breeds
+    );
 
-const SearchParams = () => {
-    const [location, setLocation] = useState( "") ;
-    const [animal, setAnimal] = useState('dog');
-    const [breed, setBreed] = useState('');
-    const [breeds, setBreeds] = useState([]);
+    async function requestPets() {
+        const { animals } = await pet.animals({
+            location,
+            breed,
+            type: animal
+        });
 
+        console.log('animals', animals);
+
+        setPets(animals || []);
+    }
+
+    useEffect(() => {
+        updateBreeds([]);
+        updateBreed('');
+
+        pet.breeds(animal).then(({ breeds }) => {
+            const breedStrings = breeds.map(({ name }) => name);
+            updateBreeds(breedStrings);
+        }, console.error);
+    }, [animal]);
 
     return (
         <div className="search-params">
-            <form>
+            <form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    requestPets();
+                }}
+            >
                 <label htmlFor="location">
                     Location
                     <input
                         id="location"
                         value={location}
-                        onChange={(e) => setLocation(e.target.value)}
-                        placeholder="Location "
+                        placeholder="Location"
+                        onChange={(e) => updateLocation(e.target.value)}
                     />
                 </label>
-                <label htmlFor="animal">
-                    Animal
+                <AnimalDropdown />
+                <BreedDropdown />
+                <label htmlFor="location">
+                    Theme
                     <select
-                        id="animal"
-                        value={animal}
-                        onChange={(e) => setAnimal(e.target.value)}
-                        onBlur={(e) => setAnimal(e.target.value)}
+                        value={theme}
+                        onChange={(e) => setTheme(e.target.value)}
+                        onBlur={(e) => setTheme(e.target.value)}
                     >
-                        <option>All</option>
-                        {ANIMALS.map((animal) => (
-                            <option key={animal} value={animal}>
-                                {animal}
-                            </option>
-                        ))}
+                        <option value="peru">Peru</option>
+                        <option value="darkblue">Dark Blue</option>
+                        <option value="chartreuse">Chartreuse</option>
+                        <option value="mediumorchid">Medium Orchid</option>
                     </select>
                 </label>
-                <label htmlFor="breed">
-                    Animal
-                    <select
-                        id="breed"
-                        value={breed}
-                        onChange={(e) => setBreed(e.target.value)}
-                        onBlur={(e) => setBreed(e.target.value)}
-                        disabled={breed.length === 0}
-                    >
-                        <option>All</option>
-                        {breeds.map((breed) => (
-                            <option key={breed} value={breed}>
-                                {breed}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-                <button>submit</button>
+                <button style={{ backgroundColor: theme }}>Submit</button>
             </form>
+            <Results pets={pets} />
         </div>
     );
-}
+};
+
 export default SearchParams;

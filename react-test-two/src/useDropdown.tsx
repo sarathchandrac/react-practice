@@ -1,43 +1,40 @@
 import React, { FunctionComponent , useState} from 'react';
-interface PropsType {
-  children: JSX.Element
-  name: string
-}
 
-const useDropdown = (label: string, defaultState:string, options: string []) => {
-    const [state, setState] = useState(defaultState);
+function useDropdown (
+    label: string,
+    defaultState:string,
+    options: string []
+): [string, () => JSX.Element, ( newState: string ) => void] {
+    const [state, updateState] = useState(defaultState);
     const id = `use-dropdown-${label.replace(' ', '').toLowerCase()}`;
-    // class Dropdown  {
-    //     render() {
-    //         return <h2>{ this.props.children}</h2>;
-    //     }
-    // }
 
 
 
-    const Dropdown: FunctionComponent<{}> = () =>  <aside>
+    const Dropdown = () =>  (
+
+        <label htmlFor={id}>
+            {label}
+            <select
+                id={id}
+                value={state}
+                onChange={( e ) => updateState( e.target.value )}
+                onBlur={( e ) => updateState( e.target.value )}
+                disabled={options.length === 0}
+            >
+                <option>All</option>
+                {options.map( ( item ) => (
+                    <option key={item} value={item}>
+                        {item}
+                    </option>
+                ) )}
+            </select>
+        </label>
+
+    )
 
 
-                <label htmlFor={id}>
-                    {label}
-                    <select
-                        id={id}
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        onBlur={(e) => setState(e.target.value)}
-                        disabled={options.length === 0}
-                    >
-                        <option>All</option>
-                        {options.map((item) => (
-                            <option key={item} value={item}>
-                                {item}
-                            </option>
-                        ))}
-                    </select>
-                </label>
-                </aside>
 
-    return [state, Dropdown, setState];
+    return [state, Dropdown, updateState];
 }
 
 export default useDropdown;

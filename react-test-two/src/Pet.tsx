@@ -1,19 +1,35 @@
-/* eslint-disable no-unused-vars */
-import React from 'react';
+import React, { FunctionComponent } from 'react';
+import { Photo } from '@frontendmasters/pet';
+import { Link } from '@reach/router';
 
-interface IPet {
+interface IProps {
     name: string;
     animal: string;
     breed: string;
-    age?: number;
+    media: Photo[];
+    location: string;
+    id: number;
 }
 
-export default function Pet({ name, animal, breed }: IPet) {
+const Pet: FunctionComponent<IProps> = (props) => {
+    const { name, animal, breed, media, location, id } = props;
+
+    let hero = 'http://placecorgi.com/300/300';
+    if (media.length) {
+        hero = media[0].small;
+    }
+
     return (
-        <div>
-            <h1>{name}</h1>
-            <h2>{animal}</h2>
-            <h2>{breed}</h2>
-        </div>
+        <Link to={`/details/${id}`} className="pet">
+            <div className="image-container">
+                <img src={hero} alt={name} />
+            </div>
+            <div className="info">
+                <h1>{name}</h1>
+                <h2>{`${animal} — ${breed} — ${location}`}</h2>
+            </div>
+        </Link>
     );
-}
+};
+
+export default Pet;
