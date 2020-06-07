@@ -1,0 +1,5 @@
+- Install dependencies
+```
+
+npm i typescript @types/node @types/react @types/react-dom
+```
